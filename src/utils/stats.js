@@ -1,5 +1,4 @@
-const MAX_STATUS_SLOTS = 7; // 8th categorical slot is reserved for "Other"
-const MONTH_BUCKET_THRESHOLD_DAYS = 60;
+import { buildStatusBreakdown, buildTrend, uniqueStatuses as uniqueStatusesOf } from './aggregate.js';
 
 export function computeStats(reviews) {
   const total = reviews.length;
@@ -15,8 +14,8 @@ export function computeStats(reviews) {
     needsActionCount,
     contactedCount,
     ratingDistribution: buildRatingDistribution(reviews),
-    statusBreakdown: buildStatusBreakdown(reviews),
-    trend: buildTrend(reviews),
+    statusBreakdown: buildStatusBreakdown(reviews, (r) => r.status),
+    trend: buildTrend(reviews, (r) => r.datePostedIso),
   };
 }
 
@@ -30,39 +29,6 @@ function buildRatingDistribution(reviews) {
   return Array.from(counts, ([star, value]) => ({ label: `${star}★`, value }));
 }
 
-function buildStatusBreakdown(reviews) {
-  const counts = new Map();
-  reviews.forEach((r) => {
-    const key = r.status || 'Unspecified';
-    counts.set(key, (counts.get(key) || 0) + 1);
-  });
-
-  const sorted = Array.from(counts, ([label, value]) => ({ label, value })).sort((a, b) => b.value - a.value);
-  if (sorted.length <= MAX_STATUS_SLOTS) return sorted;
-
-  const head = sorted.slice(0, MAX_STATUS_SLOTS);
-  const otherValue = sorted.slice(MAX_STATUS_SLOTS).reduce((sum, item) => sum + item.value, 0);
-  return [...head, { label: 'Other', value: otherValue }];
-}
-
-function buildTrend(reviews) {
-  const dates = reviews.map((r) => r.datePostedIso).filter(Boolean).sort();
-  if (dates.length === 0) return { bucket: 'day', points: [] };
-
-  const spanDays = (new Date(dates[dates.length - 1]) - new Date(dates[0])) / 86_400_000;
-  const bucket = spanDays > MONTH_BUCKET_THRESHOLD_DAYS ? 'month' : 'day';
-
-  const counts = new Map();
-  dates.forEach((iso) => {
-    const key = bucket === 'month' ? iso.slice(0, 7) : iso;
-    counts.set(key, (counts.get(key) || 0) + 1);
-  });
-
-  const points = Array.from(counts, ([date, value]) => ({ date, value })).sort((a, b) => a.date.localeCompare(b.date));
-  return { bucket, points };
-}
-
 export function uniqueStatuses(reviews) {
-  const set = new Set(reviews.map((r) => r.status || 'Unspecified'));
-  return Array.from(set).sort((a, b) => a.localeCompare(b));
+  return uniqueStatusesOf(reviews, (r) => r.status);
 }

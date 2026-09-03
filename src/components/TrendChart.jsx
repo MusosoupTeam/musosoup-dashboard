@@ -12,7 +12,7 @@ function niceMax(value) {
   return Math.ceil(value / step) * step;
 }
 
-export function TrendChart({ points, bucket }) {
+export function TrendChart({ points, bucket, ariaLabel = 'Line chart of reviews over time', unitLabel = 'reviews' }) {
   const [hoverIndex, setHoverIndex] = useState(null);
   const svgRef = useRef(null);
 
@@ -48,7 +48,7 @@ export function TrendChart({ points, bucket }) {
         ref={svgRef}
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
         role="img"
-        aria-label="Line chart of reviews over time"
+        aria-label={ariaLabel}
         className="chart-svg"
         onPointerMove={handlePointerMove}
         onPointerLeave={() => setHoverIndex(null)}
@@ -95,7 +95,7 @@ export function TrendChart({ points, bucket }) {
             left: `${((PADDING.left + xFor(hoverIndex)) / WIDTH) * 100}%`,
           }}
         >
-          <div className="trend-chart__tooltip-value">{hovered.value.toLocaleString()} reviews</div>
+          <div className="trend-chart__tooltip-value">{hovered.value.toLocaleString()} {unitLabel}</div>
           <div className="trend-chart__tooltip-date">{formatBucketLabel(hovered.date, bucket)}</div>
         </div>
       )}

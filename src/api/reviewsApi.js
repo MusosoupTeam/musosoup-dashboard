@@ -1,6 +1,8 @@
 // Thin wrapper around the Netlify Functions data-access layer. Every read
 // goes through here so the transport detail (fetch, base path) lives in one
 // place; a future write call (e.g. updateReview) would live alongside it.
+// Normalizes to { items, fetchedAt } so this source shares useSourceData
+// with other sources (e.g. Reddit mentions).
 const API_BASE = import.meta.env.VITE_API_BASE ?? '/api';
 
 export async function fetchReviews({ signal } = {}) {
@@ -9,5 +11,6 @@ export async function fetchReviews({ signal } = {}) {
     const body = await response.json().catch(() => ({}));
     throw new Error(body.error || `Request failed with status ${response.status}`);
   }
-  return response.json();
+  const body = await response.json();
+  return { items: body.reviews, fetchedAt: body.fetchedAt };
 }

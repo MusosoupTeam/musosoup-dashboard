@@ -14,7 +14,7 @@ function niceMax(value) {
 }
 
 // Single-hue "compare magnitude" bar chart - used for the ordinal 1-5 star rating distribution.
-export function VerticalBarChart({ data, formatValue = (v) => v.toLocaleString() }) {
+export function VerticalBarChart({ data, formatValue = (v) => v.toLocaleString(), ariaLabel = 'Bar chart of star rating distribution' }) {
   const [hovered, setHovered] = useState(null);
   const plotWidth = WIDTH - PADDING.left - PADDING.right;
   const plotHeight = HEIGHT - PADDING.top - PADDING.bottom;
@@ -25,7 +25,7 @@ export function VerticalBarChart({ data, formatValue = (v) => v.toLocaleString()
   const yTicks = [0, 0.5, 1].map((t) => Math.round(maxValue * t));
 
   return (
-    <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} role="img" aria-label="Bar chart of star rating distribution" className="chart-svg">
+    <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} role="img" aria-label={ariaLabel} className="chart-svg">
       <g transform={`translate(${PADDING.left},${PADDING.top})`}>
         {yTicks.map((tick) => {
           const y = plotHeight - (tick / maxValue) * plotHeight;
@@ -85,7 +85,7 @@ const CATEGORICAL_SLOTS = 8;
 
 // Categorical horizontal bar chart - used for the Status breakdown, where the
 // category name is the row label so no separate legend swatch is needed.
-export function HorizontalBarChart({ data, formatValue = (v) => v.toLocaleString() }) {
+export function HorizontalBarChart({ data, formatValue = (v) => v.toLocaleString(), ariaLabel = 'Bar chart of status breakdown' }) {
   const [hovered, setHovered] = useState(null);
   const rowHeight = 28;
   const plotHeight = data.length * rowHeight;
@@ -95,7 +95,7 @@ export function HorizontalBarChart({ data, formatValue = (v) => v.toLocaleString
   const maxValue = niceMax(Math.max(...data.map((d) => d.value), 0));
 
   return (
-    <svg viewBox={`0 0 ${WIDTH} ${height}`} role="img" aria-label="Bar chart of review status breakdown" className="chart-svg">
+    <svg viewBox={`0 0 ${WIDTH} ${height}`} role="img" aria-label={ariaLabel} className="chart-svg">
       <g transform={`translate(${labelWidth},${PADDING.top})`}>
         <line x1={0} x2={0} y1={0} y2={plotHeight} className="chart-baseline" />
         {data.map((d, i) => {
