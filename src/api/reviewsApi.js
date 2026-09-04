@@ -14,3 +14,16 @@ export async function fetchReviews({ signal } = {}) {
   const body = await response.json();
   return { items: body.reviews, fetchedAt: body.fetchedAt };
 }
+
+// Edit-mode write - requires a valid session token (see useEditSession).
+// The server re-validates the token independently; this just carries it.
+export async function updateReview({ rowNumber, reviewId, patch, editedBy, token }) {
+  const response = await fetch(`${API_BASE}/reviews/${rowNumber}`, {
+    method: 'PATCH',
+    headers: { 'content-type': 'application/json', authorization: `Bearer ${token}` },
+    body: JSON.stringify({ reviewId, editedBy, ...patch }),
+  });
+  const body = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(body.error || `Request failed with status ${response.status}`);
+  return body.review;
+}

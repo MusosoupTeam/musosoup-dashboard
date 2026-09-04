@@ -2,6 +2,7 @@ import { useState } from 'react';
 import './App.css';
 import { useReviews } from './hooks/useReviews.js';
 import { useRedditMentions } from './hooks/useRedditMentions.js';
+import { useEditSession } from './hooks/useEditSession.js';
 import { Header } from './components/Header.jsx';
 import { SourceTabs } from './components/SourceTabs.jsx';
 import { SOURCES } from './utils/sources.js';
@@ -12,11 +13,12 @@ export default function App() {
   const [source, setSource] = useState(SOURCES.TRUSTPILOT);
   const trustpilot = useReviews();
   const reddit = useRedditMentions();
+  const editSession = useEditSession();
   const active = source === SOURCES.TRUSTPILOT ? trustpilot : reddit;
 
   return (
     <div className="page">
-      <Header status={active.status} fetchedAt={active.fetchedAt} onRefresh={active.refresh} />
+      <Header status={active.status} fetchedAt={active.fetchedAt} onRefresh={active.refresh} editSession={editSession} />
 
       <main className="content">
         <SourceTabs active={source} onChange={setSource} />
@@ -27,9 +29,20 @@ export default function App() {
             status={trustpilot.status}
             error={trustpilot.error}
             refresh={trustpilot.refresh}
+            applyReviewUpdate={trustpilot.applyReviewUpdate}
+            isEditing={editSession.isEditing}
+            editToken={editSession.token}
           />
         ) : (
-          <RedditView mentions={reddit.mentions} status={reddit.status} error={reddit.error} refresh={reddit.refresh} />
+          <RedditView
+            mentions={reddit.mentions}
+            status={reddit.status}
+            error={reddit.error}
+            refresh={reddit.refresh}
+            applyMentionUpdate={reddit.applyMentionUpdate}
+            isEditing={editSession.isEditing}
+            editToken={editSession.token}
+          />
         )}
       </main>
     </div>

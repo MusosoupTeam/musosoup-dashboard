@@ -31,5 +31,15 @@ export function useSourceData(fetchFn) {
     return () => controllerRef.current?.abort();
   }, [load]);
 
-  return { ...state, refresh: load };
+  // After a successful write, the server returns the freshly-read row - this
+  // patches it into local state (matched by rowNumber) so the edit shows up
+  // immediately without a full refetch.
+  const applyItemUpdate = useCallback((rowNumber, updatedItem) => {
+    setState((prev) => ({
+      ...prev,
+      items: prev.items.map((item) => (item.rowNumber === rowNumber ? updatedItem : item)),
+    }));
+  }, []);
+
+  return { ...state, refresh: load, applyItemUpdate };
 }

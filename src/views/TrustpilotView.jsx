@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { defaultFilters, filterReviews } from '../utils/filterReviews.js';
 import { resolveDateRange } from '../utils/dateRanges.js';
 import { computeStats, uniqueStatuses } from '../utils/stats.js';
+import { updateReview } from '../api/reviewsApi.js';
 import { FiltersBar } from '../components/FiltersBar.jsx';
 import { KpiRow } from '../components/KpiRow.jsx';
 import { ChartCard } from '../components/ChartCard.jsx';
@@ -9,7 +10,7 @@ import { VerticalBarChart, HorizontalBarChart } from '../components/BarChart.jsx
 import { TrendChart } from '../components/TrendChart.jsx';
 import { ReviewsTable } from '../components/ReviewsTable.jsx';
 
-export function TrustpilotView({ reviews, status, error, refresh }) {
+export function TrustpilotView({ reviews, status, error, refresh, applyReviewUpdate, isEditing, editToken }) {
   const [filters, setFilters] = useState(defaultFilters);
 
   const statusOptions = useMemo(() => uniqueStatuses(reviews), [reviews]);
@@ -20,6 +21,17 @@ export function TrustpilotView({ reviews, status, error, refresh }) {
   }, [reviews, filters]);
 
   const stats = useMemo(() => computeStats(filtered), [filtered]);
+
+  async function handleSaveReview(review, patch, editedBy) {
+    const updated = await updateReview({
+      rowNumber: review.rowNumber,
+      reviewId: review.reviewId,
+      patch,
+      editedBy,
+      token: editToken,
+    });
+    applyReviewUpdate(review.rowNumber, updated);
+  }
 
   return (
     <>
@@ -64,7 +76,12 @@ export function TrustpilotView({ reviews, status, error, refresh }) {
             </ChartCard>
           </div>
 
-          <ReviewsTable reviews={filtered} />
+          <ReviewsTable
+            reviews={filtered}
+            statusOptions={statusOptions}
+            isEditing={isEditing}
+            onSaveReview={handleSaveReview}
+          />
         </>
       )}
     </>

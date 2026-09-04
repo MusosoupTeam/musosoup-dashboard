@@ -70,6 +70,80 @@
   cursor: default;
 }
 
+.button--primary {
+  background: var(--series-1);
+  border-color: var(--series-1);
+  color: #ffffff;
+}
+
+/* Edit mode */
+
+.edit-mode {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.edit-mode__badge {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--status-good);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.edit-mode__badge::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--status-good);
+}
+
+.edit-mode__popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 30;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: 12px;
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.edit-mode__label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.edit-mode__label input {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 13px;
+}
+
+.edit-mode__error {
+  color: var(--status-critical);
+  font-size: 12px;
+}
+
+.edit-mode__popover-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
 /* Source tabs */
 
 .source-tabs {
@@ -572,6 +646,109 @@
   margin-top: 2px;
   color: var(--text-muted);
   font-size: 12px;
+}
+
+.reviews-table__muted-text {
+  color: var(--text-muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* Row edit panel */
+
+.edit-row td {
+  background: var(--page-bg);
+  padding: 16px;
+}
+
+.edit-row__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.edit-row__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.edit-row__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.edit-row__field--wide {
+  grid-column: 1 / -1;
+}
+
+.edit-row__field select,
+.edit-row__field input,
+.edit-row__field textarea {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 13px;
+  font-family: inherit;
+  background: var(--surface-1);
+  color: var(--text-primary);
+  resize: vertical;
+}
+
+.edit-row__reply-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.edit-row__reply-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.edit-row__last-updated {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.edit-row__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+.edit-row__by {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.edit-row__by input {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 13px;
+  background: var(--surface-1);
+  color: var(--text-primary);
+}
+
+.edit-row__error {
+  color: var(--status-critical);
+  font-size: 12px;
+}
+
+.edit-row__buttons {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
 }
 
 .reviews-table__empty {

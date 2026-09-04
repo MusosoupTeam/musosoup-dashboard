@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { defaultRedditFilters, filterRedditMentions } from '../utils/filterRedditMentions.js';
 import { resolveDateRange } from '../utils/dateRanges.js';
 import { computeRedditStats, uniqueRedditStatuses } from '../utils/redditStats.js';
+import { updateRedditMention } from '../api/redditApi.js';
 import { RedditFiltersBar } from '../components/RedditFiltersBar.jsx';
 import { RedditKpiRow } from '../components/RedditKpiRow.jsx';
 import { ChartCard } from '../components/ChartCard.jsx';
@@ -9,7 +10,7 @@ import { HorizontalBarChart } from '../components/BarChart.jsx';
 import { TrendChart } from '../components/TrendChart.jsx';
 import { RedditMentionsTable } from '../components/RedditMentionsTable.jsx';
 
-export function RedditView({ mentions, status, error, refresh }) {
+export function RedditView({ mentions, status, error, refresh, applyMentionUpdate, isEditing, editToken }) {
   const [filters, setFilters] = useState(defaultRedditFilters);
 
   const statusOptions = useMemo(() => uniqueRedditStatuses(mentions), [mentions]);
@@ -20,6 +21,17 @@ export function RedditView({ mentions, status, error, refresh }) {
   }, [mentions, filters]);
 
   const stats = useMemo(() => computeRedditStats(filtered), [filtered]);
+
+  async function handleSaveMention(mention, patch, editedBy) {
+    const updated = await updateRedditMention({
+      rowNumber: mention.rowNumber,
+      postId: mention.postId,
+      patch,
+      editedBy,
+      token: editToken,
+    });
+    applyMentionUpdate(mention.rowNumber, updated);
+  }
 
   return (
     <>
@@ -65,7 +77,12 @@ export function RedditView({ mentions, status, error, refresh }) {
             </ChartCard>
           </div>
 
-          <RedditMentionsTable mentions={filtered} />
+          <RedditMentionsTable
+            mentions={filtered}
+            statusOptions={statusOptions}
+            isEditing={isEditing}
+            onSaveMention={handleSaveMention}
+          />
         </>
       )}
     </>
