@@ -43,24 +43,40 @@ Reading the dashboard never requires a password. Making a change does:
    It's checked server-side in `netlify/functions/auth.js` against the
    `DASHBOARD_EDIT_PASSWORD` environment variable — the frontend never
    evaluates it. On success the server issues a short-lived (4 hour) signed
-   token, stored in the browser's `sessionStorage` (cleared when the tab
-   closes, not a permanent login).
+   token. The token lives in React state **only** (`src/hooks/useEditSession.js`)
+   — never `localStorage` or `sessionStorage` — so a page refresh, a new
+   tab, or navigating away always comes back locked; there is nothing to
+   clear on logout beyond resetting that state.
+   - Why not a JWT: a JWT needs a library and buys standardized claims/
+     interop with other services, which a single shared password with one
+     permission level doesn't need. Instead the token is an opaque
+     `expiryTimestamp.signature` pair, HMAC-SHA256-signed with
+     `DASHBOARD_EDIT_PASSWORD` as the key, using Node's built-in `crypto`
+     (`netlify/functions/lib/authSession.js`) — tamper-proof and
+     time-limited the same way, with zero new dependencies.
 2. Every write request (`PATCH /api/reviews/:row`,
    `PATCH /api/reddit-mentions/:row`) carries that token and the server
    re-checks it independently (`netlify/functions/lib/requireSession.js`) -
    a request without a valid token is rejected with 401 even if it never
    went through the UI at all.
 3. Editable fields:
-   - **Trustpilot**: Status (dropdown), Notes, Assigned To, Outcome, and an
-     approve/edit + copy flow for Suggested Reply (tweak the draft, copy it,
-     paste into Trustpilot by hand — this app never posts to Trustpilot).
-     Date Contacted is never directly editable; it auto-stamps with today's
-     date the moment Status is changed to "Contacted".
-   - **Reddit Mentions**: Status and Notes only.
+   - **Trustpilot**: Status (fixed dropdown: New, Contacted, Resolved,
+     Declined to engage, No response from reviewer — enforced server-side
+     too, in `reviews.js`, so a direct API call can't write an arbitrary
+     status string), Notes, Assigned To, Outcome, and an approve/edit +
+     copy flow for Suggested Reply (tweak the draft, copy it, paste into
+     Trustpilot by hand — this app never posts to Trustpilot). Date
+     Contacted is never directly editable; it auto-stamps with today's date
+     the moment Status is changed to "Contacted".
+   - **Reddit Mentions**: Status and Notes only (Reddit's Status list is
+     whatever values already exist in that tab's data, not the fixed
+     Trustpilot list above).
 4. Every save asks for a name or initials ("Edited by") and stamps the time,
    shown on the row as e.g. "Last updated: Sam, 2:14pm" — informal
    attribution, not an enforced login. The name field is prefilled from
-   whatever was typed last in the same browser tab, for convenience.
+   whatever was typed last in the same browser tab (via `sessionStorage`,
+   since this is just a convenience prefill, not the security-sensitive
+   session credential) for convenience, but stays editable every time.
 5. Writes are guarded against the sheet having changed shape underneath the
    app: before writing, the server re-checks that the target row still holds
    the same Review ID / Post ID the browser last read. If someone reordered

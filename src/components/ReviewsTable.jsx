@@ -5,6 +5,12 @@ import { formatTimestamp } from '../utils/format.js';
 
 const EDITABLE_FIELDS = ['status', 'notes', 'assignedTo', 'outcome', 'suggestedReply'];
 
+// Fixed canonical set for the Reviews tab - editors pick from this list
+// rather than inventing new status strings. If a row already holds some
+// other legacy value, it's appended so opening the row doesn't silently
+// change its status just by displaying the dropdown.
+const STATUS_OPTIONS = ['New', 'Contacted', 'Resolved', 'Declined to engage', 'No response from reviewer'];
+
 function Stars({ rating }) {
   if (rating == null) return <span className="reviews-table__muted">—</span>;
   return (
@@ -25,7 +31,7 @@ function draftFrom(review) {
   };
 }
 
-export function ReviewsTable({ reviews, statusOptions, isEditing, onSaveReview }) {
+export function ReviewsTable({ reviews, isEditing, onSaveReview }) {
   const sorted = useMemo(
     () => [...reviews].sort((a, b) => (b.datePostedIso || '').localeCompare(a.datePostedIso || '')),
     [reviews],
@@ -70,10 +76,11 @@ export function ReviewsTable({ reviews, statusOptions, isEditing, onSaveReview }
   }
 
   const dropdownOptions = useMemo(() => {
-    const options = new Set([...statusOptions, 'Contacted']);
-    if (draft?.status) options.add(draft.status);
-    return Array.from(options).sort((a, b) => a.localeCompare(b));
-  }, [statusOptions, draft]);
+    if (draft?.status && !STATUS_OPTIONS.includes(draft.status)) {
+      return [...STATUS_OPTIONS, draft.status];
+    }
+    return STATUS_OPTIONS;
+  }, [draft]);
 
   const columnCount = isEditing ? 9 : 8;
 

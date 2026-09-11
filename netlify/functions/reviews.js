@@ -1,4 +1,4 @@
-import { listReviews, updateReview, EDITABLE_REVIEW_FIELDS } from './lib/reviewsRepository.js';
+import { listReviews, updateReview, EDITABLE_REVIEW_FIELDS, REVIEW_STATUS_OPTIONS } from './lib/reviewsRepository.js';
 import { requireSession } from './lib/requireSession.js';
 import { RowConflictError } from './lib/errors.js';
 import { json } from './lib/http.js';
@@ -48,6 +48,9 @@ export default async (request, context) => {
     }
     if (Object.keys(patch).length === 0) {
       return json({ error: 'No editable fields provided' }, 400);
+    }
+    if ('status' in patch && !REVIEW_STATUS_OPTIONS.includes(patch.status)) {
+      return json({ error: `Status must be one of: ${REVIEW_STATUS_OPTIONS.join(', ')}` }, 400);
     }
 
     try {

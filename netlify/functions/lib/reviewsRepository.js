@@ -13,6 +13,11 @@ const TRUTHY_NEEDS_ACTION = new Set(['yes', 'y', 'true', '1']);
 // written to its own cell by column key.
 export const EDITABLE_REVIEW_FIELDS = ['status', 'notes', 'assignedTo', 'outcome', 'suggestedReply'];
 
+// The fixed set of values Status may be written as. Enforced server-side
+// (reviews.js checks this before calling updateReview) so a direct API call
+// can't write an arbitrary string even though the UI only offers these.
+export const REVIEW_STATUS_OPTIONS = ['New', 'Contacted', 'Resolved', 'Declined to engage', 'No response from reviewer'];
+
 export function rowToReview(row, rowNumber) {
   const review = { rowNumber };
   REVIEW_COLUMNS.forEach((column, index) => {

@@ -76,12 +76,7 @@ export function TrustpilotView({ reviews, status, error, refresh, applyReviewUpd
             </ChartCard>
           </div>
 
-          <ReviewsTable
-            reviews={filtered}
-            statusOptions={statusOptions}
-            isEditing={isEditing}
-            onSaveReview={handleSaveReview}
-          />
+          <ReviewsTable reviews={filtered} isEditing={isEditing} onSaveReview={handleSaveReview} />
         </>
       )}
     </>
