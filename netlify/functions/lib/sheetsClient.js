@@ -1,6 +1,11 @@
 import { google } from 'googleapis';
 
-const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
+// Full read/write scope - the client from getSheetsClient() is shared by
+// every repository (reads and writes alike), so this one scope has to cover
+// both. Read-only here would 403 the write endpoints even with Editor
+// access on the sheet itself, since OAuth scope and sheet-level permission
+// are checked independently.
+const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 
 // Netlify keeps a warm Lambda around between invocations, so cache the
 // authenticated client at module scope rather than re-authenticating per request.
