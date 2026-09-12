@@ -2,6 +2,7 @@ import { listRedditMentions, updateRedditMention, EDITABLE_REDDIT_FIELDS } from 
 import { requireSession } from './lib/requireSession.js';
 import { RowConflictError } from './lib/errors.js';
 import { json } from './lib/http.js';
+import { STATUS_OPTIONS } from './lib/statusOptions.js';
 
 // GET /api/reddit-mentions - read-only, open to anyone.
 // PATCH /api/reddit-mentions/:rowNumber - edits one row; requires a valid
@@ -45,6 +46,9 @@ export default async (request, context) => {
     }
     if (Object.keys(patch).length === 0) {
       return json({ error: 'No editable fields provided' }, 400);
+    }
+    if ('status' in patch && !STATUS_OPTIONS.includes(patch.status)) {
+      return json({ error: `Status must be one of: ${STATUS_OPTIONS.join(', ')}` }, 400);
     }
 
     try {

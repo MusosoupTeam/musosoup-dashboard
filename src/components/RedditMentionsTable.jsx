@@ -2,6 +2,7 @@ import { Fragment, useMemo, useState } from 'react';
 import { StatusBadge, NeedsActionBadge } from './StatusBadge.jsx';
 import { EditActions } from './EditActions.jsx';
 import { formatTimestamp } from '../utils/format.js';
+import { STATUS_OPTIONS } from '../utils/statusOptions.js';
 
 const EDITABLE_FIELDS = ['status', 'notes'];
 
@@ -9,7 +10,7 @@ function draftFrom(mention) {
   return { status: mention.status ?? '', notes: mention.notes ?? '' };
 }
 
-export function RedditMentionsTable({ mentions, statusOptions, isEditing, onSaveMention }) {
+export function RedditMentionsTable({ mentions, isEditing, onSaveMention }) {
   const sorted = useMemo(
     () => [...mentions].sort((a, b) => (b.datePostedIso || '').localeCompare(a.datePostedIso || '')),
     [mentions],
@@ -41,10 +42,11 @@ export function RedditMentionsTable({ mentions, statusOptions, isEditing, onSave
   }
 
   const dropdownOptions = useMemo(() => {
-    const options = new Set(statusOptions);
-    if (draft?.status) options.add(draft.status);
-    return Array.from(options).sort((a, b) => a.localeCompare(b));
-  }, [statusOptions, draft]);
+    if (draft?.status && !STATUS_OPTIONS.includes(draft.status)) {
+      return [...STATUS_OPTIONS, draft.status];
+    }
+    return STATUS_OPTIONS;
+  }, [draft]);
 
   const columnCount = isEditing ? 7 : 6;
 

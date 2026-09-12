@@ -77,12 +77,7 @@ export function RedditView({ mentions, status, error, refresh, applyMentionUpdat
             </ChartCard>
           </div>
 
-          <RedditMentionsTable
-            mentions={filtered}
-            statusOptions={statusOptions}
-            isEditing={isEditing}
-            onSaveMention={handleSaveMention}
-          />
+          <RedditMentionsTable mentions={filtered} isEditing={isEditing} onSaveMention={handleSaveMention} />
         </>
       )}
     </>

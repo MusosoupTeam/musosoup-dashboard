@@ -2,14 +2,9 @@ import { Fragment, useMemo, useState } from 'react';
 import { StatusBadge, NeedsActionBadge } from './StatusBadge.jsx';
 import { EditActions } from './EditActions.jsx';
 import { formatTimestamp } from '../utils/format.js';
+import { STATUS_OPTIONS } from '../utils/statusOptions.js';
 
 const EDITABLE_FIELDS = ['status', 'notes', 'assignedTo', 'outcome', 'suggestedReply'];
-
-// Fixed canonical set for the Reviews tab - editors pick from this list
-// rather than inventing new status strings. If a row already holds some
-// other legacy value, it's appended so opening the row doesn't silently
-// change its status just by displaying the dropdown.
-const STATUS_OPTIONS = ['New', 'Contacted', 'Resolved', 'Declined to engage', 'No response from reviewer'];
 
 function Stars({ rating }) {
   if (rating == null) return <span className="reviews-table__muted">—</span>;
