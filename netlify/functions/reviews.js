@@ -38,7 +38,7 @@ export default async (request, context) => {
       return json({ error: 'Invalid request body' }, 400);
     }
 
-    const editedBy = (body?.editedBy ?? '').toString().trim();
+    const editedBy = (body?.editedBy ?? '').toString().trim().slice(0, 40);
     if (!editedBy) {
       return json({ error: 'Your name or initials are required to save a change.' }, 400);
     }

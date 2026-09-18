@@ -83,7 +83,18 @@ export function ReviewsTable({ reviews, isEditing, onSaveReview }) {
     <section className="reviews-table-card">
       <h2 className="chart-card__title">Reviews</h2>
       <div className="reviews-table__scroll">
-        <table className="reviews-table">
+        <table className="reviews-table reviews-table--fixed">
+          <colgroup>
+            <col style={{ width: '90px' }} />
+            <col style={{ width: '120px' }} />
+            <col style={{ width: '90px' }} />
+            <col />
+            <col style={{ width: '140px' }} />
+            <col style={{ width: '110px' }} />
+            <col style={{ width: '120px' }} />
+            <col style={{ width: '130px' }} />
+            {isEditing && <col style={{ width: '80px' }} />}
+          </colgroup>
           <thead>
             <tr>
               <th>Date</th>

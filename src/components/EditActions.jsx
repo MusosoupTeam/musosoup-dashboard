@@ -1,6 +1,11 @@
 import { useState } from 'react';
 import { getLastEditorName, setLastEditorName } from '../utils/editedByMemory.js';
 
+// A name/initials field has no business being long - capping it keeps a
+// stray paste (an ID, a URL, a whole sentence) from landing in the sheet's
+// Edited By column and dominating the "Last updated: <name>, <time>" line.
+const EDITED_BY_MAX_LENGTH = 40;
+
 // Shared Save/Cancel + "Edited by" control for an inline row edit form. The
 // name field is retyped every save (informal attribution, not a login) but
 // prefilled from what was last used in this browser tab session.
@@ -36,6 +41,7 @@ export function EditActions({ onSave, onCancel }) {
           value={editedBy}
           onChange={(event) => setEditedBy(event.target.value)}
           placeholder="Your name or initials"
+          maxLength={EDITED_BY_MAX_LENGTH}
         />
       </label>
       {error && <div className="edit-row__error">{error}</div>}

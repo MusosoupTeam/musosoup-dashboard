@@ -610,6 +610,14 @@
   font-size: 13px;
 }
 
+/* Fixed layout only for the Reviews table (RedditMentionsTable stays on the
+   default auto layout) - lets its <colgroup> give the Review column all the
+   leftover space instead of the browser's auto layout starving it while
+   Status/Needs action/Assigned to sit on more room than they need. */
+.reviews-table--fixed {
+  table-layout: fixed;
+}
+
 .reviews-table th {
   text-align: left;
   color: var(--text-muted);
@@ -636,6 +644,11 @@
 
 .reviews-table__text {
   max-width: 420px;
+}
+
+.reviews-table--fixed .reviews-table__text {
+  max-width: none;
+  overflow-wrap: break-word;
 }
 
 .reviews-table__muted {
